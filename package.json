@@ -1,0 +1,15 @@
+{
+  "name": "forsta-ai-bot",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "node src"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apiai": "4.0.3",
+    "dialogflow": "0.1.0",
+    "librelay": "2.1.0"
+  }
+}

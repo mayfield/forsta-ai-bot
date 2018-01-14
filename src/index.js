@@ -35,7 +35,6 @@ async function main() {
         await login();
     }
     const atlas = await relay.AtlasClient.factory();
-    const botAddr = await relay.storage.getState('addr');
     if (!await relay.storage.getState('registrationId')) {
         const devices = await atlas.getDevices();
         if (devices.length) {
@@ -48,9 +47,8 @@ async function main() {
             }
         }
         await relay.registerAccount();
-        console.info("Registered (new) account for: ", botAddr);
     }
-
+    const botAddr = await relay.storage.getState('addr');
     const bot = (await atlas.getUsers([botAddr]))[0];
     console.info(`Starting message listener for: @${bot.tag.slug}:${bot.org.slug}`);
     msgListener({atlas, bot});

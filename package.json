@@ -9,6 +9,6 @@
   "license": "ISC",
   "dependencies": {
     "apiai": "4.0.3",
-    "librelay": "2.1.1"
+    "librelay": "2.3.0"
   }
 }

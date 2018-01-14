@@ -24,8 +24,10 @@ async function input(prompt) {
     }
 }
 
-async function login() {
-    const userTag = await input("Enter your full user tag (e.g @user:org): ");
+async function login(userTag) {
+    if (!userTag) {
+        userTag = await input("Enter your full user tag (e.g @user:org): ");
+    }
     const completeLogin = await relay.AtlasClient.authenticate(userTag);
     await completeLogin(await input("SMS Verification Code: "));
 }
@@ -34,7 +36,14 @@ async function main() {
     if (!await relay.storage.getState('atlasCredential')) {
         await login();
     }
-    const atlas = await relay.AtlasClient.factory();
+    let atlas;
+    try {
+        atlas = await relay.AtlasClient.factory();
+    } catch(e) {
+        console.error("Failed to get atlas client:", e);
+        await login();
+        return await main();
+    }
     if (!await relay.storage.getState('registrationId')) {
         const devices = await atlas.getDevices();
         if (devices.length) {
@@ -51,6 +60,7 @@ async function main() {
     const botAddr = await relay.storage.getState('addr');
     const bot = (await atlas.getUsers([botAddr]))[0];
     console.info(`Starting message listener for: @${bot.tag.slug}:${bot.org.slug}`);
+    atlas.maintainToken(true);
     msgListener({atlas, bot});
 }
 

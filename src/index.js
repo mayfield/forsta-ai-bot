@@ -254,6 +254,12 @@ class IntentManager {
         return `Okay, I'm now ${bot.first_name} ${bot.middle_name} ${bot.last_name}`;
     }
 
+    async handleMedicineRash(params) {
+        if (params.bodypart) {
+            return `I'm learning about ${params.bodypart} right now!`;
+        }
+    }
+
     findHandler(name) {
         const handler = this.handlers.get(name);
         if (handler) {

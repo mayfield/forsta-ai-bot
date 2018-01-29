@@ -1,7 +1,6 @@
 
 const apiai = require('apiai');
 const process = require('process');
-const readline = require('readline');
 const relay = require('librelay');
 
 const aiApp = apiai(process.env.API_AI_TOKEN);
@@ -15,21 +14,12 @@ async function aiRequest(textQuery, sessionId) {
     });
 }
 
-async function input(prompt) {
-    const rl = readline.createInterface(process.stdin, process.stdout);
-    try {
-        return await new Promise(resolve => rl.question(prompt, resolve));
-    } finally {
-        rl.close();
-    }
-}
-
 async function login(userTag) {
     if (!userTag) {
-        userTag = await input("Enter your full user tag (e.g @user:org): ");
+        userTag = await relay.util.consoleInput("Enter your full user tag (e.g @user:org): ");
     }
-    const completeLogin = await relay.AtlasClient.authenticate(userTag);
-    await completeLogin(await input("SMS Verification Code: "));
+    const completeLogin = await relay.AtlasClient.requestAuthenticationCode(userTag);
+    await completeLogin(await relay.util.consoleInput("SMS Verification Code: "));
 }
 
 async function main() {
@@ -51,7 +41,7 @@ async function main() {
             for (const x of devices) {
                 console.log('   ', x.id, x.name);
             }
-            if (await input('"YES" to reset account: ') !== 'YES') {
+            if (await relay.util.consoleInput('"YES" to reset account: ') !== 'YES') {
                 process.exit(1);
             }
         }
@@ -60,7 +50,7 @@ async function main() {
     const botAddr = await relay.storage.getState('addr');
     const bot = (await atlas.getUsers([botAddr]))[0];
     console.info(`Starting message listener for: @${bot.tag.slug}:${bot.org.slug}`);
-    atlas.maintainToken(true);
+    atlas.maintainJWT();
     msgListener({atlas, bot});
 }
 
